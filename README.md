@@ -20,12 +20,15 @@ Website bán hộp quà và quà tặng thủ công chạy **local**, dùng **HT
 ## Chạy nhanh bằng XAMPP trên Windows
 
 1. Cài XAMPP và bật **Apache** + **MySQL**.
-2. Copy thư mục project vào:
-   `C:\xampp\htdocs\memory-box-local-shop`
+2. Clone repository vào thư mục htdocs:
+   ```bash
+   git clone https://github.com/nphi1410/memory-box-shop.git C:/xampp/htdocs/memory-box-shop-main
+   ```
 3. Mở `http://localhost/phpmyadmin`.
-4. Chọn **Import** và import file `database/schema.sql`.
+4. Chọn **Import** và import file `database/schema.sql` trong thư mục project.
+   Schema tạo lại database `memory_box` và chèn dữ liệu mẫu. Mỗi lần import sẽ xóa các bảng hiện có trong database này trước khi tạo lại; chỉ chạy khi muốn bắt đầu lại từ đầu.
 5. Mở trình duyệt tại:
-   `http://localhost/memory-box-local-shop/`
+   `http://localhost/memory-box-shop-main/`
 
 Mặc định project kết nối MySQL bằng:
 

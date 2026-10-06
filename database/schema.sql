@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS feedback;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS custom_boxes;
+DROP TABLE IF EXISTS custom_cart_items;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
