@@ -21,11 +21,11 @@ Website bán hộp quà và quà tặng thủ công chạy **local**, dùng **HT
 
 1. Cài XAMPP và bật **Apache** + **MySQL**.
 2. Copy thư mục project vào:
-   `C:\xampp\htdocs\memory-box-shop`
+   `C:\xampp\htdocs\memory-box-local-shop`
 3. Mở `http://localhost/phpmyadmin`.
 4. Chọn **Import** và import file `database/schema.sql`.
 5. Mở trình duyệt tại:
-   `http://localhost/memory-box-shop/`
+   `http://localhost/memory-box-local-shop/`
 
 Mặc định project kết nối MySQL bằng:
 

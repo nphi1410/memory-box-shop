@@ -1,0 +1,13 @@
+# Local / IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environment overrides
+.env
+config/database.local.php
+
+# Logs / temp
+*.log
+/tmp/
