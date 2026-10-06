@@ -1,10 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0cb"/><stop offset="1" stop-color="#fffaf8"/></linearGradient></defs>
-<rect width="800" height="600" rx="42" fill="url(#g)"/>
-<circle cx="660" cy="110" r="100" fill="#fff" opacity=".45"/><circle cx="135" cy="480" r="125" fill="#fff" opacity=".34"/>
-<rect x="220" y="155" width="360" height="270" rx="54" fill="#fff" opacity=".88" stroke="#cf8f44" stroke-width="8"/>
-<path d="M220 255h360" stroke="#cf8f44" stroke-width="8" opacity=".65"/>
-<path d="M400 155v270" stroke="#cf8f44" stroke-width="8" opacity=".65"/>
-<text x="400" y="335" font-size="100" text-anchor="middle" font-family="Arial" fill="#cf8f44">🕯</text>
-<text x="400" y="510" font-size="34" font-weight="700" text-anchor="middle" font-family="Arial" fill="#382f36">Vanilla Cloud</text>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0cc"/><stop offset="1" stop-color="#fffaf3"/></linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#fff" stop-opacity=".5"/><stop offset=".48" stop-color="#f7dfb2" stop-opacity=".72"/><stop offset="1" stop-color="#fff" stop-opacity=".65"/></linearGradient>
+  <linearGradient id="wax" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff6dd"/><stop offset="1" stop-color="#efd39e"/></linearGradient>
+  <filter id="shadow" x="-.4" y="-.3" width="1.8" height="1.8"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<rect width="800" height="600" rx="42" fill="url(#bg)"/>
+<circle cx="654" cy="113" r="104" fill="#fff" opacity=".48"/><circle cx="142" cy="485" r="128" fill="#fff" opacity=".4"/>
+<ellipse cx="400" cy="493" rx="151" ry="22" fill="#b8874b" opacity=".16" filter="url(#shadow)"/>
+<path d="M386 205c-30-38-8-70 14-100 28 41 42 72 12 101z" fill="#efa94e"/>
+<path d="M398 198c-12-20-3-37 7-53 15 23 19 39 6 54z" fill="#fff5bf"/>
+<path d="M399 223v35" stroke="#715744" stroke-width="7" stroke-linecap="round"/>
+<rect x="300" y="249" width="200" height="226" rx="28" fill="url(#glass)" stroke="#c58d4e" stroke-width="7"/>
+<ellipse cx="400" cy="256" rx="96" ry="18" fill="#fff8e6" stroke="#c58d4e" stroke-width="6"/>
+<ellipse cx="400" cy="264" rx="78" ry="11" fill="url(#wax)"/>
+<path d="M310 290v150M490 290v150" stroke="#fff" stroke-width="12" opacity=".5" stroke-linecap="round"/>
+<rect x="321" y="326" width="158" height="91" rx="12" fill="#fff9ed" stroke="#e8d3ad" stroke-width="3"/>
+<text x="400" y="363" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" letter-spacing="4" fill="#9a7145">MEMORY</text>
+<path d="M369 379h62" stroke="#d5b37d" stroke-width="3" stroke-linecap="round"/>
+<text x="400" y="402" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" fill="#8d6c4c">VANILLA</text>
+<path d="M300 464q100 24 200 0" fill="none" stroke="#fff" stroke-width="7" opacity=".68"/>
+<text x="400" y="544" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#493a32">Nến thơm Vanilla Cloud</text>
 </svg>

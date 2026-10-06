@@ -1,10 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4e7cf"/><stop offset="1" stop-color="#fffaf8"/></linearGradient></defs>
-<rect width="800" height="600" rx="42" fill="url(#g)"/>
-<circle cx="660" cy="110" r="100" fill="#fff" opacity=".45"/><circle cx="135" cy="480" r="125" fill="#fff" opacity=".34"/>
-<rect x="220" y="155" width="360" height="270" rx="54" fill="#fff" opacity=".88" stroke="#9b7952" stroke-width="8"/>
-<path d="M220 255h360" stroke="#9b7952" stroke-width="8" opacity=".65"/>
-<path d="M400 155v270" stroke="#9b7952" stroke-width="8" opacity=".65"/>
-<text x="400" y="335" font-size="100" text-anchor="middle" font-family="Arial" fill="#9b7952">❀</text>
-<text x="400" y="510" font-size="34" font-weight="700" text-anchor="middle" font-family="Arial" fill="#382f36">Hoa khô Mini</text>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f5e8d2"/><stop offset="1" stop-color="#fffaf2"/></linearGradient>
+  <linearGradient id="wrap" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffdf5"/><stop offset="1" stop-color="#dfc7a7"/></linearGradient>
+  <filter id="shadow" x="-.3" y="-.2" width="1.6" height="1.5"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#75634a" flood-opacity=".16"/></filter>
+</defs>
+<rect width="800" height="600" rx="42" fill="url(#bg)"/>
+<circle cx="654" cy="113" r="104" fill="#fff" opacity=".5"/><circle cx="142" cy="485" r="128" fill="#fff" opacity=".42"/>
+<ellipse cx="400" cy="501" rx="165" ry="20" fill="#9e8664" opacity=".13"/>
+<g fill="none" stroke-linecap="round">
+  <path d="M399 389Q337 278 311 190M410 390Q474 270 496 179M405 391Q408 256 402 142M389 393Q323 331 274 282M420 391Q484 324 531 272" stroke="#7e9870" stroke-width="9"/>
+  <path d="M352 334q-45-48-76-24 17 39 69 43M451 324q38-55 80-38-13 44-70 59M383 272q-44-46-71-29 20 39 65 48M431 263q41-44 71-20-19 40-63 41" fill="#9aae81" stroke="#768f69" stroke-width="4"/>
+</g>
+<g stroke="#b88959" stroke-width="5">
+  <g transform="translate(310 184)"><ellipse rx="13" ry="34" cy="-22" fill="#f4d99b"/><ellipse rx="13" ry="34" cy="22" fill="#f4d99b"/><ellipse rx="34" ry="13" cx="-22" fill="#f4d99b"/><ellipse rx="34" ry="13" cx="22" fill="#f4d99b"/><circle r="15" fill="#bd8a50"/></g>
+  <g transform="translate(498 175)"><ellipse rx="12" ry="31" cy="-20" fill="#e7b9a8"/><ellipse rx="12" ry="31" cy="20" fill="#e7b9a8"/><ellipse rx="31" ry="12" cx="-20" fill="#e7b9a8"/><ellipse rx="31" ry="12" cx="20" fill="#e7b9a8"/><circle r="14" fill="#bd8a50"/></g>
+  <g transform="translate(403 140)"><ellipse rx="12" ry="31" cy="-20" fill="#e9d59a"/><ellipse rx="12" ry="31" cy="20" fill="#e9d59a"/><ellipse rx="31" ry="12" cx="-20" fill="#e9d59a"/><ellipse rx="31" ry="12" cx="20" fill="#e9d59a"/><circle r="14" fill="#bd8a50"/></g>
+  <g transform="translate(275 278) scale(.78)"><ellipse rx="13" ry="34" cy="-22" fill="#d5c3a6"/><ellipse rx="13" ry="34" cy="22" fill="#d5c3a6"/><ellipse rx="34" ry="13" cx="-22" fill="#d5c3a6"/><ellipse rx="34" ry="13" cx="22" fill="#d5c3a6"/><circle r="15" fill="#bd8a50"/></g>
+  <g transform="translate(535 268) scale(.8)"><ellipse rx="13" ry="34" cy="-22" fill="#efd1a0"/><ellipse rx="13" ry="34" cy="22" fill="#efd1a0"/><ellipse rx="34" ry="13" cx="-22" fill="#efd1a0"/><ellipse rx="34" ry="13" cx="22" fill="#efd1a0"/><circle r="15" fill="#bd8a50"/></g>
+</g>
+<path d="M296 339l104 62 104-62-39 143H335z" fill="url(#wrap)" stroke="#bca181" stroke-width="5" stroke-linejoin="round" filter="url(#shadow)"/>
+<path d="M400 399v70M400 422q-37-29-43 4 20 19 43 5 23 14 43-5-6-33-43-4z" fill="none" stroke="#9e7656" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="400" y="558" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#4b4135">Hoa khô Mini</text>
 </svg>

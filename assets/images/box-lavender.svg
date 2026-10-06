@@ -5,6 +5,6 @@
 <rect x="220" y="155" width="360" height="270" rx="54" fill="#fff" opacity=".88" stroke="#7d68bb" stroke-width="8"/>
 <path d="M220 255h360" stroke="#7d68bb" stroke-width="8" opacity=".65"/>
 <path d="M400 155v270" stroke="#7d68bb" stroke-width="8" opacity=".65"/>
-<text x="400" y="335" font-size="100" text-anchor="middle" font-family="Arial" fill="#7d68bb">✦</text>
+<text x="400" y="295" font-size="100" text-anchor="middle" font-family="Arial" fill="#7d68bb">✦</text>
 <text x="400" y="510" font-size="34" font-weight="700" text-anchor="middle" font-family="Arial" fill="#382f36">Lavender Dream</text>
 </svg>

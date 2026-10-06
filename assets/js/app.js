@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const tabs = document.querySelectorAll('[data-filter-tabs] button');
-  const cards = document.querySelectorAll('[data-product-grid] [data-category]');
+  const productGroups = document.querySelectorAll('[data-product-group]');
   tabs.forEach((tab) => tab.addEventListener('click', () => {
     tabs.forEach((x) => x.classList.remove('active'));
     tab.classList.add('active');
     const filter = tab.dataset.filter;
-    cards.forEach((card) => {
-      card.hidden = filter !== 'all' && card.dataset.category !== filter;
+    productGroups.forEach((group) => {
+      group.hidden = filter !== 'all' && group.dataset.productGroup !== filter;
     });
   }));
 
@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorInput = builder.querySelector('[data-color-input]');
     const colorValue = builder.querySelector('[data-color-value]');
     const preview = builder.querySelector('[data-preview-box]');
+    const previewItems = builder.querySelector('[data-preview-items]');
+    const chosenList = builder.querySelector('[data-chosen-gifts-list]');
     const giftInputs = [...builder.querySelectorAll('[data-gift-price]')];
+    const shapeInputs = [...builder.querySelectorAll('input[name="box_shape"]')];
     const count = builder.querySelector('[data-selected-count]');
     const total = builder.querySelector('[data-builder-total]');
     const formatMoney = (value) => new Intl.NumberFormat('vi-VN').format(value) + '₫';
@@ -34,11 +37,51 @@ document.addEventListener('DOMContentLoaded', () => {
       const giftTotal = selected.reduce((sum, input) => sum + Number(input.dataset.giftPrice || 0), 0);
       count.textContent = `${selected.length} món`;
       total.textContent = formatMoney(89000 + giftTotal);
-      preview.style.background = `linear-gradient(145deg, ${colorInput.value}, #fff)`;
+      preview.style.setProperty('--box-color', colorInput.value);
+      preview.dataset.shape = shapeInputs.find((input) => input.checked)?.value || 'square';
       colorValue.textContent = colorInput.value;
+
+      previewItems.replaceChildren();
+      chosenList.replaceChildren();
+      if (!selected.length) {
+        const empty = document.createElement('span');
+        empty.className = 'preview-empty';
+        empty.innerHTML = 'Quà bạn chọn sẽ<br>xuất hiện ở đây';
+        previewItems.append(empty);
+        const hint = document.createElement('p');
+        hint.textContent = 'Chưa có món quà nào. Chọn một món ở trên để bắt đầu nhé.';
+        chosenList.append(hint);
+      } else {
+        selected.forEach((input) => {
+          const previewGift = document.createElement('div');
+          previewGift.className = 'preview-gift';
+          const photo = document.createElement('div');
+          photo.className = 'preview-gift-photo';
+          const image = document.createElement('img');
+          image.src = input.dataset.giftImage;
+          image.alt = input.dataset.giftName;
+          image.className = 'preview-gift-image';
+          photo.append(image);
+          // The gift artwork already includes its own product name; keep the
+          // preview focused on the illustration instead of printing it twice.
+          previewGift.append(photo);
+          previewItems.append(previewGift);
+
+          const chosen = document.createElement('div');
+          chosen.className = 'chosen-gift';
+          const chosenImage = image.cloneNode();
+          chosenImage.alt = '';
+          chosenImage.className = 'chosen-gift-image';
+          const name = document.createElement('span');
+          name.textContent = input.dataset.giftName;
+          chosen.append(chosenImage, name);
+          chosenList.append(chosen);
+        });
+      }
     };
     colorInput.addEventListener('input', render);
     giftInputs.forEach((input) => input.addEventListener('change', render));
+    shapeInputs.forEach((input) => input.addEventListener('change', render));
     render();
   }
 });

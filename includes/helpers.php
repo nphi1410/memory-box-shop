@@ -75,7 +75,10 @@ function cart_count(PDO $pdo, int $userId): int
 {
     $stmt = $pdo->prepare('SELECT COALESCE(SUM(quantity), 0) FROM cart_items WHERE user_id = ?');
     $stmt->execute([$userId]);
-    return (int) $stmt->fetchColumn();
+    $productCount = (int) $stmt->fetchColumn();
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM custom_cart_items WHERE user_id = ?');
+    $stmt->execute([$userId]);
+    return $productCount + (int) $stmt->fetchColumn();
 }
 
 function money(float|int|string $amount): string

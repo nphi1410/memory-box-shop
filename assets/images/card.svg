@@ -1,10 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe5ed"/><stop offset="1" stop-color="#fffaf8"/></linearGradient></defs>
-<rect width="800" height="600" rx="42" fill="url(#g)"/>
-<circle cx="660" cy="110" r="100" fill="#fff" opacity=".45"/><circle cx="135" cy="480" r="125" fill="#fff" opacity=".34"/>
-<rect x="220" y="155" width="360" height="270" rx="54" fill="#fff" opacity=".88" stroke="#ba5472" stroke-width="8"/>
-<path d="M220 255h360" stroke="#ba5472" stroke-width="8" opacity=".65"/>
-<path d="M400 155v270" stroke="#ba5472" stroke-width="8" opacity=".65"/>
-<text x="400" y="335" font-size="100" text-anchor="middle" font-family="Arial" fill="#ba5472">♡</text>
-<text x="400" y="510" font-size="34" font-weight="700" text-anchor="middle" font-family="Arial" fill="#382f36">Thiệp Viết Tay</text>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe3ec"/><stop offset="1" stop-color="#fff8fb"/></linearGradient>
+  <filter id="shadow" x="-.2" y="-.2" width="1.4" height="1.5"><feDropShadow dx="0" dy="15" stdDeviation="13" flood-color="#96516a" flood-opacity=".18"/></filter>
+</defs>
+<rect width="800" height="600" rx="42" fill="url(#bg)"/>
+<circle cx="654" cy="113" r="104" fill="#fff" opacity=".5"/><circle cx="142" cy="485" r="128" fill="#fff" opacity=".42"/>
+<g filter="url(#shadow)" transform="rotate(3 400 300)">
+  <rect x="286" y="103" width="228" height="333" rx="14" fill="#fffefa" stroke="#d7869e" stroke-width="5"/>
+  <rect x="302" y="119" width="196" height="301" rx="8" fill="none" stroke="#f0c3d0" stroke-width="2"/>
+  <path d="M326 153h36M438 153h36M326 388h36M438 388h36" stroke="#dc9bae" stroke-width="4" stroke-linecap="round"/>
+  <path d="M400 245c-49-41-91 23 0 89 91-66 49-130 0-89z" fill="#dc6382"/>
+  <path d="M400 247c-31-28-55 15 0 54 55-39 31-82 0-54z" fill="#f8b6c7"/>
+  <text x="400" y="315" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-style="italic" fill="#9d536a">for you</text>
+  <path d="M342 349h116M358 365h84" stroke="#d8bdc5" stroke-width="4" stroke-linecap="round"/>
+</g>
+<path d="M226 381l174 76 174-76v111H226z" fill="#fff7f8" stroke="#d7869e" stroke-width="5" stroke-linejoin="round"/>
+<path d="M226 381l174 132 174-132" fill="#f7d5df" stroke="#d7869e" stroke-width="5" stroke-linejoin="round"/>
+<path d="M380 455l20 17 20-17v55l-20 16-20-16z" fill="#cf597a"/>
+<text x="400" y="558" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#563944">Thiệp Viết Tay</text>
 </svg>

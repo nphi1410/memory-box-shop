@@ -3,7 +3,10 @@ $pageTitle = 'Trang chủ';
 require_once __DIR__ . '/includes/header.php';
 
 $stmt = $pdo->query('SELECT id, name, category, price, description, image_url FROM products WHERE is_active = 1 ORDER BY category, id');
-$products = $stmt->fetchAll();
+$productsByCategory = ['box' => [], 'gift' => []];
+foreach ($stmt->fetchAll() as $product) {
+    $productsByCategory[$product['category']][] = $product;
+}
 ?>
 <section class="hero">
     <div class="container hero-grid">
@@ -48,32 +51,48 @@ $products = $stmt->fetchAll();
             </div>
         </div>
 
-        <div class="product-grid" data-product-grid>
-            <?php foreach ($products as $product): ?>
-                <article class="product-card" data-category="<?= e($product['category']) ?>">
-                    <div class="product-image-wrap">
-                        <img src="<?= e($product['image_url']) ?>" alt="<?= e($product['name']) ?>" class="product-image">
-                        <span class="product-chip"><?= $product['category'] === 'box' ? 'Hộp quà' : 'Quà tặng' ?></span>
-                    </div>
-                    <div class="product-body">
-                        <h3><?= e($product['name']) ?></h3>
-                        <p><?= e($product['description']) ?></p>
-                        <div class="product-price"><?= money($product['price']) ?></div>
-                        <div class="product-actions">
-                            <form action="add-to-cart.php" method="post">
-                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                                <button class="btn btn-icon" type="submit" title="Thêm vào giỏ">🛒 <span>Thêm giỏ</span></button>
-                            </form>
-                            <form action="order-now.php" method="post">
-                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                                <button class="btn btn-primary" type="submit">Đặt hàng</button>
-                            </form>
-                            <a class="btn btn-ghost" href="feedback.php?product_id=<?= (int) $product['id'] ?>">Feedback</a>
+        <div class="product-groups">
+            <?php foreach ([
+                'box' => ['number' => '01', 'title' => 'Hộp quà', 'description' => 'Chọn sẵn chiếc hộp làm nên món quà của bạn.'],
+                'gift' => ['number' => '02', 'title' => 'Quà bên trong', 'description' => 'Thêm nến, scrapbook, thiệp hoặc hoa khô vào hộp quà.'],
+            ] as $category => $group): ?>
+                <section class="product-group" data-product-group="<?= e($category) ?>" aria-labelledby="group-title-<?= e($category) ?>">
+                    <div class="product-group-head">
+                        <div class="product-group-heading">
+                            <span><?= e($group['number']) ?></span>
+                            <div><h3 id="group-title-<?= e($category) ?>"><?= e($group['title']) ?></h3><p><?= e($group['description']) ?></p></div>
                         </div>
+                        <small><?= count($productsByCategory[$category]) ?> sản phẩm</small>
                     </div>
-                </article>
+                    <div class="product-grid" data-product-grid>
+                        <?php foreach ($productsByCategory[$category] as $product): ?>
+                            <article class="product-card" data-category="<?= e($product['category']) ?>">
+                                <div class="product-image-wrap">
+                                    <img src="<?= e($product['image_url']) ?>?v=gift-art-2" alt="<?= e($product['name']) ?>" class="product-image">
+                                    <span class="product-chip"><?= $product['category'] === 'box' ? 'Hộp quà' : 'Quà tặng' ?></span>
+                                </div>
+                                <div class="product-body">
+                                    <h3><?= e($product['name']) ?></h3>
+                                    <p><?= e($product['description']) ?></p>
+                                    <div class="product-price"><?= money($product['price']) ?></div>
+                                    <div class="product-actions">
+                                        <form action="add-to-cart.php" method="post">
+                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                            <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                                            <button class="btn btn-icon" type="submit" title="Thêm vào giỏ">🛒 <span>Thêm giỏ</span></button>
+                                        </form>
+                                        <form action="order-now.php" method="post">
+                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                            <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                                            <button class="btn btn-primary" type="submit">Đặt hàng</button>
+                                        </form>
+                                        <a class="btn btn-ghost" href="feedback.php?product_id=<?= (int) $product['id'] ?>">Feedback</a>
+                                    </div>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
             <?php endforeach; ?>
         </div>
     </div>

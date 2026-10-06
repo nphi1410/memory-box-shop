@@ -1,10 +1,26 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#cde7ff"/><stop offset="1" stop-color="#fffaf8"/></linearGradient></defs>
-<rect width="800" height="600" rx="42" fill="url(#g)"/>
-<circle cx="660" cy="110" r="100" fill="#fff" opacity=".45"/><circle cx="135" cy="480" r="125" fill="#fff" opacity=".34"/>
-<rect x="220" y="155" width="360" height="270" rx="54" fill="#fff" opacity=".88" stroke="#4f83aa" stroke-width="8"/>
-<path d="M220 255h360" stroke="#4f83aa" stroke-width="8" opacity=".65"/>
-<path d="M400 155v270" stroke="#4f83aa" stroke-width="8" opacity=".65"/>
-<text x="400" y="335" font-size="100" text-anchor="middle" font-family="Arial" fill="#4f83aa">✎</text>
-<text x="400" y="510" font-size="34" font-weight="700" text-anchor="middle" font-family="Arial" fill="#382f36">Scrapbook Mini</text>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#cfe8ff"/><stop offset="1" stop-color="#f8faff"/></linearGradient>
+  <linearGradient id="photo" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a9d5e8"/><stop offset="1" stop-color="#f6dcaf"/></linearGradient>
+  <filter id="shadow" x="-.2" y="-.2" width="1.4" height="1.5"><feDropShadow dx="0" dy="16" stdDeviation="13" flood-color="#46637d" flood-opacity=".2"/></filter>
+</defs>
+<rect width="800" height="600" rx="42" fill="url(#bg)"/>
+<circle cx="654" cy="113" r="104" fill="#fff" opacity=".48"/><circle cx="142" cy="485" r="128" fill="#fff" opacity=".4"/>
+<g transform="rotate(-4 400 315)" filter="url(#shadow)">
+  <path d="M172 191q113-28 228 7v269q-113-33-228-2z" fill="#fffdf8" stroke="#5b7893" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M400 198q115-35 228-7v274q-115-31-228 2z" fill="#fffdf8" stroke="#5b7893" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M400 198v269" stroke="#88a6bd" stroke-width="5"/>
+  <rect x="204" y="222" width="156" height="132" rx="8" fill="url(#photo)" stroke="#fff" stroke-width="11"/>
+  <circle cx="318" cy="251" r="17" fill="#fff0ba"/>
+  <path d="M211 328l47-48 34 31 27-23 34 47H211z" fill="#779e9a"/>
+  <path d="M218 338h130" stroke="#fff" stroke-width="4" opacity=".8"/>
+  <path d="M219 385h137M219 400h112M219 415h123" stroke="#becbd2" stroke-width="5" stroke-linecap="round"/>
+  <path d="M437 242h147M437 257h111" stroke="#aabdc9" stroke-width="5" stroke-linecap="round"/>
+  <path d="M452 312c0-17 24-17 24 0 0-17 24-17 24 0 0 18-24 34-24 34s-24-16-24-34z" fill="#e889a4"/>
+  <rect x="527" y="291" width="66" height="61" rx="8" fill="#e7f3f6" stroke="#b5ccd6" stroke-width="3"/>
+  <path d="M535 340l19-22 13 12 11-14 9 24z" fill="#89aaa5"/>
+  <path d="M437 385h145M437 400h127M437 415h138" stroke="#becbd2" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="393" cy="252" r="4" fill="#9fb6c6"/><circle cx="393" cy="275" r="4" fill="#9fb6c6"/><circle cx="393" cy="298" r="4" fill="#9fb6c6"/><circle cx="393" cy="321" r="4" fill="#9fb6c6"/>
+</g>
+<text x="400" y="544" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#34495a">Scrapbook Mini</text>
 </svg>
