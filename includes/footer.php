@@ -18,6 +18,6 @@
     </div>
     <div class="container footer-bottom">© <?= date('Y') ?> Memory Box. Local demo.</div>
 </footer>
-<script src="assets/js/app.js?v=custom-preview-2"></script>
+<script src="assets/js/app.js?v=checkout-selection-1"></script>
 </body>
 </html>

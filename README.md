@@ -7,7 +7,7 @@ Website bán hộp quà và quà tặng thủ công chạy **local**, dùng **HT
 - Đăng ký, đăng nhập, đăng xuất, quên mật khẩu (demo local).
 - Trang chủ hiển thị toàn bộ sản phẩm.
 - Mỗi sản phẩm có 3 hành động: **Thêm vào giỏ / Đặt hàng / Feedback**.
-- Giỏ hàng ở navbar, cập nhật số lượng và thanh toán toàn bộ giỏ.
+- Giỏ hàng ở navbar, cập nhật số lượng, chọn món cần mua và thanh toán theo lựa chọn.
 - Hồ sơ cá nhân: avatar chữ cái, thông tin và sửa thông tin.
 - Trang **Tự thiết kế hộp quà** gồm đúng 2 phần:
   1. Chọn hộp: hình dáng + màu.

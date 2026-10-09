@@ -22,7 +22,7 @@ if ($directProductId) {
     $directCustom = $customStmt->fetch();
     if ($directCustom) $customItems = [$directCustom];
 } else {
-    $cartStmt = $pdo->prepare('SELECT c.quantity, p.id, p.name, p.price, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.user_id = ? ORDER BY c.id DESC');
+    $cartStmt = $pdo->prepare('SELECT c.id AS cart_id, c.quantity, p.id, p.name, p.price, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.user_id = ? ORDER BY c.id DESC');
     $cartStmt->execute([$userId]);
     $items = $cartStmt->fetchAll();
     $customStmt = $pdo->prepare('SELECT id, box_shape, box_color, gift_items, message, estimated_price FROM custom_cart_items WHERE user_id = ? ORDER BY id');
@@ -35,9 +35,16 @@ if (!$items && !$customItems) {
     redirect($directCustomId ? 'custom-box.php' : 'cart.php');
 }
 
-$total = array_reduce($items, fn($sum, $item) => $sum + ((float) $item['price'] * (int) $item['quantity']), 0.0)
-    + array_sum(array_map(fn($item) => (float) $item['estimated_price'], $customItems));
-$itemCount = array_sum(array_map(fn($item) => (int) $item['quantity'], $items)) + count($customItems);
+$availableSelections = array_merge(
+    array_map(fn($item) => 'p:' . (int) ($item['cart_id'] ?? $item['id']), $items),
+    array_map(fn($item) => 'c:' . (int) $item['id'], $customItems)
+);
+$storedSelections = $_SESSION['checkout_selection'] ?? null;
+$selectedKeys = ($directProductId || $directCustomId || !is_array($storedSelections))
+    ? $availableSelections
+    : array_values(array_intersect($storedSelections, $availableSelections));
+$total = 0.0;
+$itemCount = 0;
 $checkoutUrl = 'checkout.php' . ($directProductId ? '?product_id=' . $directProductId : ($directCustomId ? '?custom_id=' . $directCustomId : ''));
 $backUrl = $directCustomId ? 'custom-box.php' : ($directProductId ? 'index.php#products' : 'cart.php');
 $shapeLabels = ['square' => 'Hộp vuông', 'heart' => 'Hộp trái tim', 'round' => 'Hộp tròn'];
@@ -50,6 +57,11 @@ $paymentMethod = 'cod';
 
 if (is_post()) {
     verify_csrf();
+    $postedSelections = $_POST['selected_items'] ?? [];
+    $submittedSelections = is_array($postedSelections) ? array_values(array_unique(array_map('strval', $postedSelections))) : [];
+    $selectedKeys = array_values(array_intersect($submittedSelections, $availableSelections));
+    if (!$selectedKeys) $errors[] = 'Hãy chọn ít nhất một món để đặt hàng.';
+
     $shippingName = trim((string) ($_POST['shipping_name'] ?? ''));
     $shippingPhone = trim((string) ($_POST['shipping_phone'] ?? ''));
     $shippingAddress = trim((string) ($_POST['shipping_address'] ?? ''));
@@ -60,24 +72,33 @@ if (is_post()) {
     if ($shippingAddress === '' || mb_strlen($shippingAddress) > 1000) $errors[] = 'Vui lòng nhập địa chỉ giao hàng (tối đa 1.000 ký tự).';
     if (!in_array($paymentMethod, ['cod', 'bank_transfer'], true)) $errors[] = 'Vui lòng chọn phương thức thanh toán.';
 
-    if (!$errors) {
+}
+
+$orderItems = array_values(array_filter($items, fn($item) => in_array('p:' . (int) ($item['cart_id'] ?? $item['id']), $selectedKeys, true)));
+$orderCustomItems = array_values(array_filter($customItems, fn($item) => in_array('c:' . (int) $item['id'], $selectedKeys, true)));
+$total = array_reduce($orderItems, fn($sum, $item) => $sum + ((float) $item['price'] * (int) $item['quantity']), 0.0)
+    + array_sum(array_map(fn($item) => (float) $item['estimated_price'], $orderCustomItems));
+$itemCount = array_sum(array_map(fn($item) => (int) $item['quantity'], $orderItems)) + count($orderCustomItems);
+
+if (is_post() && !$errors) {
+        // Only the selected items above are included in the new order.
         $pdo->beginTransaction();
         try {
             $customBoxStmt = $pdo->prepare('INSERT INTO custom_boxes (user_id, box_shape, box_color, gift_items, message, estimated_price) VALUES (?, ?, ?, ?, ?, ?)');
             $customOrderItems = [];
-            foreach ($customItems as $customItem) {
+            foreach ($orderCustomItems as $customItem) {
                 $customBoxStmt->execute([$userId, $customItem['box_shape'], $customItem['box_color'], $customItem['gift_items'], $customItem['message'], $customItem['estimated_price']]);
                 $customOrderItems[] = ['cart_item' => $customItem, 'custom_box_id' => (int) $pdo->lastInsertId()];
             }
             $firstCustomBoxId = $customOrderItems[0]['custom_box_id'] ?? null;
-            $orderType = $directProductId ? 'product' : ($items ? 'cart' : 'custom');
-            $orderNote = $customItems[0]['message'] ?? null;
+            $orderType = $directProductId ? 'product' : ($orderItems ? 'cart' : 'custom');
+            $orderNote = $orderCustomItems[0]['message'] ?? null;
             $orderStmt = $pdo->prepare('INSERT INTO orders (user_id, order_code, total_amount, status, order_type, custom_box_id, custom_note, shipping_name, shipping_phone, shipping_address, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $orderStmt->execute([$userId, make_order_code(), $total, 'placed', $orderType, $firstCustomBoxId, $orderNote, $shippingName, $shippingPhone, $shippingAddress, $paymentMethod]);
             $orderId = (int) $pdo->lastInsertId();
 
             $itemStmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, item_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)');
-            foreach ($items as $item) {
+            foreach ($orderItems as $item) {
                 $itemStmt->execute([$orderId, $item['id'], $item['name'], $item['price'], $item['quantity']]);
             }
             $customItemStmt = $pdo->prepare('INSERT INTO order_items (order_id, product_id, item_name, unit_price, quantity, meta_json) VALUES (?, NULL, ?, ?, 1, ?)');
@@ -95,8 +116,12 @@ if (is_post()) {
             if ($directCustomId) {
                 $pdo->prepare('DELETE FROM custom_cart_items WHERE id = ? AND user_id = ?')->execute([$directCustomId, $userId]);
             } elseif (!$directProductId) {
-                $pdo->prepare('DELETE FROM cart_items WHERE user_id = ?')->execute([$userId]);
-                $pdo->prepare('DELETE FROM custom_cart_items WHERE user_id = ?')->execute([$userId]);
+                foreach ($orderItems as $item) $pdo->prepare('DELETE FROM cart_items WHERE id = ? AND user_id = ?')->execute([(int) $item['cart_id'], $userId]);
+                foreach ($orderCustomItems as $item) $pdo->prepare('DELETE FROM custom_cart_items WHERE id = ? AND user_id = ?')->execute([(int) $item['id'], $userId]);
+                $_SESSION['checkout_selection'] = array_values(array_diff($selectedKeys, array_merge(
+                    array_map(fn($item) => 'p:' . (int) ($item['cart_id'] ?? $item['id']), $orderItems),
+                    array_map(fn($item) => 'c:' . (int) $item['id'], $orderCustomItems)
+                )));
             }
             $pdo->commit();
             redirect('order-success.php?id=' . $orderId);
@@ -104,7 +129,6 @@ if (is_post()) {
             if ($pdo->inTransaction()) $pdo->rollBack();
             $errors[] = 'Có lỗi khi tạo đơn hàng. Vui lòng thử lại.';
         }
-    }
 }
 
 $pageTitle = 'Thanh toán';
@@ -120,7 +144,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <?php if ($errors): ?><div class="form-alert error" role="alert"><?php foreach ($errors as $error): ?><div><?= e($error) ?></div><?php endforeach; ?></div><?php endif; ?>
 
-        <form action="<?= e($checkoutUrl) ?>" method="post" class="checkout-layout">
+        <form action="<?= e($checkoutUrl) ?>" method="post" class="checkout-layout" data-checkout-form>
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <div class="checkout-main">
                 <section class="checkout-card">
@@ -143,19 +167,22 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <aside class="checkout-summary">
-                <h2>Đơn hàng của bạn <span><?= $itemCount ?> món</span></h2>
+                <h2>Đơn hàng của bạn <span data-checkout-selected-count><?= $itemCount ?> món được chọn</span></h2>
+                <label class="checkout-select-all"><input type="checkbox" data-checkout-select-all <?= count($selectedKeys) === count($availableSelections) ? 'checked' : '' ?>> Chọn tất cả</label>
                 <div class="checkout-items">
                     <?php foreach ($items as $item): ?>
-                        <div class="checkout-item"><img src="<?= e($item['image_url']) ?>" alt=""><div><strong><?= e($item['name']) ?></strong><small>Số lượng: <?= (int) $item['quantity'] ?></small></div><b><?= money((float) $item['price'] * (int) $item['quantity']) ?></b></div>
+                        <?php $selectionKey = 'p:' . (int) ($item['cart_id'] ?? $item['id']); $lineTotal = (float) $item['price'] * (int) $item['quantity']; ?>
+                        <div class="checkout-item" data-checkout-item data-line-total="<?= $lineTotal ?>"><input type="checkbox" name="selected_items[]" value="<?= e($selectionKey) ?>" data-checkout-select <?= in_array($selectionKey, $selectedKeys, true) ? 'checked' : '' ?> aria-label="Chọn <?= e($item['name']) ?>"><img src="<?= e($item['image_url']) ?>" alt=""><div><strong><?= e($item['name']) ?></strong><small>Số lượng: <?= (int) $item['quantity'] ?></small></div><b><?= money($lineTotal) ?></b></div>
                     <?php endforeach; ?>
                     <?php foreach ($customItems as $item): ?>
-                        <div class="checkout-item"><div class="checkout-custom-thumb" style="--box-color: <?= e($item['box_color']) ?>"><?= e($shapeIcons[$item['box_shape']] ?? '□') ?></div><div><strong>Hộp quà tự thiết kế</strong><small><?= e($shapeLabels[$item['box_shape']] ?? 'Hộp quà') ?> · 1 hộp</small></div><b><?= money($item['estimated_price']) ?></b></div>
+                        <?php $selectionKey = 'c:' . (int) $item['id']; ?>
+                        <div class="checkout-item" data-checkout-item data-line-total="<?= (float) $item['estimated_price'] ?>"><input type="checkbox" name="selected_items[]" value="<?= e($selectionKey) ?>" data-checkout-select <?= in_array($selectionKey, $selectedKeys, true) ? 'checked' : '' ?> aria-label="Chọn hộp quà tự thiết kế"><div class="checkout-custom-thumb" style="--box-color: <?= e($item['box_color']) ?>"><?= e($shapeIcons[$item['box_shape']] ?? '□') ?></div><div><strong>Hộp quà tự thiết kế</strong><small><?= e($shapeLabels[$item['box_shape']] ?? 'Hộp quà') ?> · 1 hộp</small></div><b><?= money($item['estimated_price']) ?></b></div>
                     <?php endforeach; ?>
                 </div>
-                <div class="checkout-total-row"><span>Tạm tính</span><strong><?= money($total) ?></strong></div>
+                <div class="checkout-total-row"><span>Tạm tính</span><strong data-checkout-total><?= money($total) ?></strong></div>
                 <div class="checkout-total-row"><span>Phí vận chuyển</span><span>Liên hệ sau</span></div>
-                <div class="checkout-grand-total"><span>Tổng cộng</span><strong><?= money($total) ?></strong></div>
-                <button class="btn btn-primary btn-full checkout-submit" type="submit">🔒 Xác nhận đặt hàng</button>
+                <div class="checkout-grand-total"><span>Tổng cộng</span><strong data-checkout-grand-total><?= money($total) ?></strong></div>
+                <button class="btn btn-primary btn-full checkout-submit" type="submit" data-checkout-submit <?= $selectedKeys ? '' : 'disabled' ?>>🔒 Xác nhận đặt hàng</button>
                 <p class="checkout-secure">Thông tin của bạn được dùng để xử lý đơn hàng.</p>
             </aside>
         </form>

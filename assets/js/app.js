@@ -8,6 +8,67 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => toast.remove(), 3800);
   });
 
+  const formatMoney = (value) => new Intl.NumberFormat('vi-VN').format(value) + '₫';
+  const cartSelectionForm = document.querySelector('[data-cart-selection-form]');
+  if (cartSelectionForm) {
+    const boxes = [...document.querySelectorAll('[data-cart-select]')];
+    const selectAll = document.querySelector('[data-cart-select-all]');
+    const checkoutButton = document.querySelector('[data-cart-checkout]');
+    const renderCartSelection = () => {
+      const selected = boxes.filter((box) => box.checked);
+      const total = selected.reduce((sum, box) => sum + Number(box.dataset.selectionPrice || 0), 0);
+      document.querySelectorAll('[data-cart-selected-count], [data-cart-selected-count-summary]').forEach((node) => {
+        node.textContent = node.hasAttribute('data-cart-selected-count-summary') ? `${selected.length} món` : `${selected.length} món được chọn`;
+      });
+      document.querySelector('[data-cart-selected-total]')?.replaceChildren(document.createTextNode(formatMoney(total)));
+      document.querySelector('[data-cart-grand-total]')?.replaceChildren(document.createTextNode(formatMoney(total)));
+      if (selectAll) selectAll.checked = boxes.length > 0 && selected.length === boxes.length;
+      if (checkoutButton) checkoutButton.disabled = selected.length === 0;
+    };
+    boxes.forEach((box) => box.addEventListener('change', renderCartSelection));
+    selectAll?.addEventListener('change', () => {
+      boxes.forEach((box) => { box.checked = selectAll.checked; });
+      renderCartSelection();
+    });
+    cartSelectionForm.addEventListener('submit', (event) => {
+      if (!boxes.some((box) => box.checked)) {
+        event.preventDefault();
+        renderCartSelection();
+      }
+    });
+    renderCartSelection();
+  }
+
+  const checkoutForm = document.querySelector('[data-checkout-form]');
+  if (checkoutForm) {
+    const boxes = [...checkoutForm.querySelectorAll('[data-checkout-select]')];
+    const selectAll = checkoutForm.querySelector('[data-checkout-select-all]');
+    const submit = checkoutForm.querySelector('[data-checkout-submit]');
+    const renderCheckoutSelection = () => {
+      const selected = boxes.filter((box) => box.checked);
+      const total = selected.reduce((sum, box) => sum + Number(box.closest('[data-checkout-item]')?.dataset.lineTotal || 0), 0);
+      const count = `${selected.length} món được chọn`;
+      const countNode = checkoutForm.querySelector('[data-checkout-selected-count]');
+      if (countNode) countNode.textContent = count;
+      checkoutForm.querySelector('[data-checkout-total]')?.replaceChildren(document.createTextNode(formatMoney(total)));
+      checkoutForm.querySelector('[data-checkout-grand-total]')?.replaceChildren(document.createTextNode(formatMoney(total)));
+      if (selectAll) selectAll.checked = boxes.length > 0 && selected.length === boxes.length;
+      if (submit) submit.disabled = selected.length === 0;
+    };
+    boxes.forEach((box) => box.addEventListener('change', renderCheckoutSelection));
+    selectAll?.addEventListener('change', () => {
+      boxes.forEach((box) => { box.checked = selectAll.checked; });
+      renderCheckoutSelection();
+    });
+    checkoutForm.addEventListener('submit', (event) => {
+      if (!boxes.some((box) => box.checked)) {
+        event.preventDefault();
+        renderCheckoutSelection();
+      }
+    });
+    renderCheckoutSelection();
+  }
+
   const tabs = document.querySelectorAll('[data-filter-tabs] button');
   const productGroups = document.querySelectorAll('[data-product-group]');
   tabs.forEach((tab) => tab.addEventListener('click', () => {
