@@ -5,21 +5,41 @@ require_login();
 
 $userId = current_user_id();
 $user = get_user($pdo, $userId);
-$cartStmt = $pdo->prepare('SELECT c.quantity, p.id, p.name, p.price, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.user_id = ? ORDER BY c.id DESC');
-$cartStmt->execute([$userId]);
-$items = $cartStmt->fetchAll();
-$customStmt = $pdo->prepare('SELECT id, box_shape, box_color, gift_items, message, estimated_price FROM custom_cart_items WHERE user_id = ? ORDER BY id');
-$customStmt->execute([$userId]);
-$customItems = $customStmt->fetchAll();
+$directProductId = max(0, (int) ($_GET['product_id'] ?? 0));
+$directCustomId = max(0, (int) ($_GET['custom_id'] ?? 0));
+if ($directProductId && $directCustomId) redirect('cart.php');
+
+$items = [];
+$customItems = [];
+if ($directProductId) {
+    $productStmt = $pdo->prepare('SELECT id, name, price, image_url, 1 AS quantity FROM products WHERE id = ? AND is_active = 1');
+    $productStmt->execute([$directProductId]);
+    $directProduct = $productStmt->fetch();
+    if ($directProduct) $items = [$directProduct];
+} elseif ($directCustomId) {
+    $customStmt = $pdo->prepare('SELECT id, box_shape, box_color, gift_items, message, estimated_price FROM custom_cart_items WHERE id = ? AND user_id = ?');
+    $customStmt->execute([$directCustomId, $userId]);
+    $directCustom = $customStmt->fetch();
+    if ($directCustom) $customItems = [$directCustom];
+} else {
+    $cartStmt = $pdo->prepare('SELECT c.quantity, p.id, p.name, p.price, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.user_id = ? ORDER BY c.id DESC');
+    $cartStmt->execute([$userId]);
+    $items = $cartStmt->fetchAll();
+    $customStmt = $pdo->prepare('SELECT id, box_shape, box_color, gift_items, message, estimated_price FROM custom_cart_items WHERE user_id = ? ORDER BY id');
+    $customStmt->execute([$userId]);
+    $customItems = $customStmt->fetchAll();
+}
 
 if (!$items && !$customItems) {
-    flash('error', 'Giỏ hàng đang trống.');
-    redirect('cart.php');
+    flash('error', $directProductId || $directCustomId ? 'Món quà này không còn khả dụng.' : 'Giỏ hàng đang trống.');
+    redirect($directCustomId ? 'custom-box.php' : 'cart.php');
 }
 
 $total = array_reduce($items, fn($sum, $item) => $sum + ((float) $item['price'] * (int) $item['quantity']), 0.0)
     + array_sum(array_map(fn($item) => (float) $item['estimated_price'], $customItems));
 $itemCount = array_sum(array_map(fn($item) => (int) $item['quantity'], $items)) + count($customItems);
+$checkoutUrl = 'checkout.php' . ($directProductId ? '?product_id=' . $directProductId : ($directCustomId ? '?custom_id=' . $directCustomId : ''));
+$backUrl = $directCustomId ? 'custom-box.php' : ($directProductId ? 'index.php#products' : 'cart.php');
 $shapeLabels = ['square' => 'Hộp vuông', 'heart' => 'Hộp trái tim', 'round' => 'Hộp tròn'];
 $shapeIcons = ['square' => '□', 'heart' => '♡', 'round' => '○'];
 $errors = [];
@@ -50,7 +70,7 @@ if (is_post()) {
                 $customOrderItems[] = ['cart_item' => $customItem, 'custom_box_id' => (int) $pdo->lastInsertId()];
             }
             $firstCustomBoxId = $customOrderItems[0]['custom_box_id'] ?? null;
-            $orderType = $items ? 'cart' : 'custom';
+            $orderType = $directProductId ? 'product' : ($items ? 'cart' : 'custom');
             $orderNote = $customItems[0]['message'] ?? null;
             $orderStmt = $pdo->prepare('INSERT INTO orders (user_id, order_code, total_amount, status, order_type, custom_box_id, custom_note, shipping_name, shipping_phone, shipping_address, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
             $orderStmt->execute([$userId, make_order_code(), $total, 'placed', $orderType, $firstCustomBoxId, $orderNote, $shippingName, $shippingPhone, $shippingAddress, $paymentMethod]);
@@ -72,8 +92,12 @@ if (is_post()) {
                 ], JSON_UNESCAPED_UNICODE);
                 $customItemStmt->execute([$orderId, 'Hộp quà tự thiết kế', $customItem['estimated_price'], $meta]);
             }
-            $pdo->prepare('DELETE FROM cart_items WHERE user_id = ?')->execute([$userId]);
-            $pdo->prepare('DELETE FROM custom_cart_items WHERE user_id = ?')->execute([$userId]);
+            if ($directCustomId) {
+                $pdo->prepare('DELETE FROM custom_cart_items WHERE id = ? AND user_id = ?')->execute([$directCustomId, $userId]);
+            } elseif (!$directProductId) {
+                $pdo->prepare('DELETE FROM cart_items WHERE user_id = ?')->execute([$userId]);
+                $pdo->prepare('DELETE FROM custom_cart_items WHERE user_id = ?')->execute([$userId]);
+            }
             $pdo->commit();
             redirect('order-success.php?id=' . $orderId);
         } catch (Throwable $e) {
@@ -90,13 +114,13 @@ require_once __DIR__ . '/includes/header.php';
     <div class="container">
         <div class="checkout-heading">
             <div><span class="eyebrow">Sắp hoàn tất món quà của bạn</span><h1>Thanh toán</h1><p>Kiểm tra thông tin nhận hàng và chọn cách thanh toán phù hợp.</p></div>
-            <a href="cart.php">← Quay lại giỏ hàng</a>
+            <a href="<?= e($backUrl) ?>">← <?= $directProductId ? 'Quay lại sản phẩm' : ($directCustomId ? 'Quay lại thiết kế' : 'Quay lại giỏ hàng') ?></a>
         </div>
         <div class="checkout-steps" aria-label="Tiến trình đặt hàng"><span class="done"><b>✓</b> Giỏ hàng</span><i></i><span class="active"><b>2</b> Thanh toán</span><i></i><span><b>3</b> Hoàn tất</span></div>
 
         <?php if ($errors): ?><div class="form-alert error" role="alert"><?php foreach ($errors as $error): ?><div><?= e($error) ?></div><?php endforeach; ?></div><?php endif; ?>
 
-        <form method="post" class="checkout-layout">
+        <form action="<?= e($checkoutUrl) ?>" method="post" class="checkout-layout">
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <div class="checkout-main">
                 <section class="checkout-card">

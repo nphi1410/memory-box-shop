@@ -33,26 +33,9 @@ if (is_post()) {
         redirect('cart.php');
     }
 
-    $pdo->beginTransaction();
-    try {
-        $custom = $pdo->prepare('INSERT INTO custom_boxes (user_id, box_shape, box_color, gift_items, message, estimated_price) VALUES (?, ?, ?, ?, ?, ?)');
-        $custom->execute([current_user_id(), $shape, $color, json_encode($giftRows, JSON_UNESCAPED_UNICODE), $message, $estimated]);
-        $customBoxId = (int) $pdo->lastInsertId();
-
-        $order = $pdo->prepare('INSERT INTO orders (user_id, order_code, total_amount, status, order_type, custom_box_id, custom_note) VALUES (?, ?, ?, ?, ?, ?, ?)');
-        $order->execute([current_user_id(), make_order_code(), $estimated, 'placed', 'custom', $customBoxId, $message]);
-        $orderId = (int) $pdo->lastInsertId();
-
-        $meta = json_encode(['shape' => $shape, 'color' => $color, 'gift_items' => $giftRows], JSON_UNESCAPED_UNICODE);
-        $item = $pdo->prepare('INSERT INTO order_items (order_id, product_id, item_name, unit_price, quantity, meta_json) VALUES (?, NULL, ?, ?, 1, ?)');
-        $item->execute([$orderId, 'Hộp quà tự thiết kế', $estimated, $meta]);
-        $pdo->commit();
-        redirect('order-success.php?id=' . $orderId);
-    } catch (Throwable $e) {
-        $pdo->rollBack();
-        flash('error', 'Không thể lưu thiết kế. Vui lòng thử lại.');
-        redirect('custom-box.php');
-    }
+    $stmt = $pdo->prepare('INSERT INTO custom_cart_items (user_id, box_shape, box_color, gift_items, message, estimated_price) VALUES (?, ?, ?, ?, ?, ?)');
+    $stmt->execute([current_user_id(), $shape, $color, json_encode($giftRows, JSON_UNESCAPED_UNICODE), $message, $estimated]);
+    redirect('checkout.php?custom_id=' . (int) $pdo->lastInsertId());
 }
 
 $pageTitle = 'Tự thiết kế hộp quà';
@@ -60,7 +43,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="section custom-builder-section">
     <div class="container">
-        <div class="builder-intro"><span class="eyebrow">Tự thiết kế hộp quà</span><h1>Biến ý tưởng của bạn thành một món quà</h1><p>Trang này chia đúng 2 phần: chọn <strong>hộp quà</strong> và chọn <strong>quà bên trong</strong>. Không cần thanh toán online.</p></div>
+        <div class="builder-intro"><span class="eyebrow">Tự thiết kế hộp quà</span><h1>Biến ý tưởng của bạn thành một món quà</h1><p>Trang này chia đúng 2 phần: chọn <strong>hộp quà</strong> và chọn <strong>quà bên trong</strong>. Chọn cách thanh toán ở bước xác nhận đơn.</p></div>
         <form method="post" class="builder-grid" data-builder>
             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
             <div class="builder-main">
@@ -111,13 +94,13 @@ require_once __DIR__ . '/includes/header.php';
                 <?php if (current_user_id()): ?>
                     <div class="preview-actions">
                         <button class="btn btn-secondary btn-full" type="submit" name="action" value="add_to_cart">Thêm vào giỏ hàng</button>
-                        <button class="btn btn-primary btn-full" type="submit" name="action" value="order_now">Đặt hộp quà này</button>
+                        <button class="btn btn-primary btn-full" type="submit" name="action" value="order_now">Thanh toán hộp quà này</button>
                     </div>
                 <?php else: ?>
                     <a class="btn btn-primary btn-full" href="login.php">Đăng nhập để thêm vào giỏ</a>
                     <small class="preview-login-note">Bạn cần đăng nhập để lưu thiết kế hoặc đặt hộp quà.</small>
                 <?php endif; ?>
-                <small>Giá demo, chưa gồm vận chuyển. Không thanh toán online.</small>
+                <small>Giá demo, chưa gồm vận chuyển. Giao dịch thanh toán chưa được tích hợp.</small>
             </aside>
         </form>
     </div>
