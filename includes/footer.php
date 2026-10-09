@@ -13,7 +13,7 @@
         </div>
         <div>
             <strong>Lưu ý</strong>
-            <p>Demo không tích hợp thanh toán. Dữ liệu được lưu trong MySQL local.</p>
+            <p>Thanh toán trong bản demo chỉ ghi nhận phương thức đã chọn, chưa xử lý giao dịch thật.</p>
         </div>
     </div>
     <div class="container footer-bottom">© <?= date('Y') ?> Memory Box. Local demo.</div>

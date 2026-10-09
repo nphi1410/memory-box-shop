@@ -79,8 +79,8 @@ require_once __DIR__ . '/includes/header.php';
                     <div><span>Tạm tính</span><strong><?= money($total) ?></strong></div>
                     <div><span>Phí vận chuyển</span><strong>Liên hệ sau</strong></div>
                     <div class="summary-total"><span>Tổng</span><strong><?= money($total) ?></strong></div>
-                    <p>Không cần thanh toán online. Bấm đặt hàng để tạo đơn thành công.</p>
-                    <form action="checkout.php" method="post"><input type="hidden" name="csrf_token" value="<?= csrf_token() ?>"><button class="btn btn-primary btn-full" type="submit">Đặt toàn bộ giỏ hàng</button></form>
+                    <p>Chọn thông tin giao hàng và phương thức thanh toán ở bước tiếp theo.</p>
+                    <a class="btn btn-primary btn-full" href="checkout.php">Tiến hành thanh toán →</a>
                 </aside>
             </div>
         <?php endif; ?>

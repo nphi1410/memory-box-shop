@@ -18,7 +18,7 @@ $flashes = consume_flashes();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css?v=custom-preview-2">
+    <link rel="stylesheet" href="assets/css/style.css?v=checkout-1">
 </head>
 <body>
 <header class="site-header">

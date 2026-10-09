@@ -7,12 +7,13 @@ Website bán hộp quà và quà tặng thủ công chạy **local**, dùng **HT
 - Đăng ký, đăng nhập, đăng xuất, quên mật khẩu (demo local).
 - Trang chủ hiển thị toàn bộ sản phẩm.
 - Mỗi sản phẩm có 3 hành động: **Thêm vào giỏ / Đặt hàng / Feedback**.
-- Giỏ hàng ở navbar, cập nhật số lượng và đặt toàn bộ giỏ.
+- Giỏ hàng ở navbar, cập nhật số lượng và thanh toán toàn bộ giỏ.
 - Hồ sơ cá nhân: avatar chữ cái, thông tin và sửa thông tin.
 - Trang **Tự thiết kế hộp quà** gồm đúng 2 phần:
   1. Chọn hộp: hình dáng + màu.
   2. Chọn quà bên trong: nến thơm, scrapbook, thiệp, hoa khô…
-- Đặt hàng không cần thanh toán; sau khi đặt sẽ hiện trạng thái **Đã đặt hàng**.
+- Checkout có thông tin giao hàng và lựa chọn thanh toán khi nhận hàng / chuyển khoản (giao dịch demo, chưa tích hợp cổng thanh toán).
+- Sau khi xác nhận, đơn hàng hiện trạng thái **Đã đặt hàng**.
 - Lịch sử đơn hàng.
 - Feedback theo sản phẩm.
 - Dữ liệu lưu bằng MySQL local.
@@ -39,6 +40,8 @@ Mặc định project kết nối MySQL bằng:
 - Password: rỗng
 
 Nếu MySQL của bạn dùng tài khoản khác, sửa `config/database.php` hoặc đặt biến môi trường `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`.
+
+Nếu bạn đã có database từ phiên bản trước, chạy một lần `database/checkout-migration.sql` để thêm thông tin giao hàng và phương thức thanh toán vào đơn hàng.
 
 ## Tài khoản demo
 
